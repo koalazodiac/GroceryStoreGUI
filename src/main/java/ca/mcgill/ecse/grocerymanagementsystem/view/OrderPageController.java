@@ -13,8 +13,6 @@ import ca.mcgill.ecse.grocerymanagementsystem.controller.ItemController;
 import ca.mcgill.ecse.grocerymanagementsystem.controller.UserController;
 import ca.mcgill.ecse.grocerymanagementsystem.model.Order.DeliveryDeadline;
 
-
-
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,25 +21,28 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-
 import ca.mcgill.ecse.grocerymanagementsystem.view.GMSView;
 import ca.mcgill.ecse.grocerymanagementsystem.view.ViewUtils;
 
 public class OrderPageController {
 
-    @FXML private GridPane rootPane;
+    @FXML
+    private GridPane rootPane;
 
+    @FXML
+    private ChoiceBox<String> customerInput;
+    @FXML
+    private DatePicker deadlineInput;
 
-    @FXML private ChoiceBox<String> customerInput;
-    @FXML private DatePicker       deadlineInput;
+    @FXML
+    private ChoiceBox<Integer> orderInput;
+    @FXML
+    private ChoiceBox<String> itemInput;
+    @FXML
+    private TextField quantityInput;
 
-
-    @FXML private ChoiceBox<Integer> orderInput;
-    @FXML private ChoiceBox<String>  itemInput;
-    @FXML private TextField         quantityInput;
-
-
-    @FXML private ChoiceBox<Integer> actionOrderInput;
+    @FXML
+    private ChoiceBox<Integer> actionOrderInput;
 
     @FXML
     public void initialize() {
@@ -55,7 +56,6 @@ public class OrderPageController {
         });
         GMSView.registerRefreshableNode(customerInput);
 
-
         List<String> items = ItemController.getAllItems()
                 .stream()
                 .map(i -> i.getName())
@@ -67,7 +67,6 @@ public class OrderPageController {
             itemInput.setItems(FXCollections.observableList(its));
         });
         GMSView.registerRefreshableNode(itemInput);
-
 
         orderInput.addEventHandler(GMSView.REFRESH, e -> reloadOrders());
         actionOrderInput.addEventHandler(GMSView.REFRESH, e -> reloadOrders());
@@ -88,10 +87,27 @@ public class OrderPageController {
         try {
             String cust = customerInput.getValue();
             LocalDate ld = deadlineInput.getValue();
-            DeliveryDeadline dd = (ld == null)
-                    ? null
-                    : DeliveryDeadline.valueOf(ld.toString().toUpperCase());
+            DeliveryDeadline dd = null;
+
+            if (ld != null) {
+                LocalDate today = LocalDate.now();
+                long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(today, ld);
+
+                if (daysBetween == 0) {
+                    dd = DeliveryDeadline.SameDay;
+                } else if (daysBetween == 1) {
+                    dd = DeliveryDeadline.InOneDay;
+                } else if (daysBetween == 2) {
+                    dd = DeliveryDeadline.InTwoDays;
+                } else if (daysBetween == 3) {
+                    dd = DeliveryDeadline.InThreeDays;
+                } else {
+                    throw new GroceryStoreException("Delivery deadline must be within 3 days");
+                }
+            }
+
             OrderController.createOrder(cust, dd);
+            GMSView.refresh();
         } catch (GroceryStoreException ex) {
             ViewUtils.showErrorMessage(ex.getMessage());
         }
@@ -101,7 +117,8 @@ public class OrderPageController {
     private void handleDeleteOrder(ActionEvent e) {
         try {
             Integer id = orderInput.getValue();
-            if (id == null) throw new NumberFormatException();
+            if (id == null)
+                throw new NumberFormatException();
             OrderController.deleteOrder(id);
             GMSView.refresh();
         } catch (NumberFormatException nfe) {
@@ -115,8 +132,17 @@ public class OrderPageController {
     private void handleAddItem(ActionEvent e) {
         try {
             Integer id = orderInput.getValue();
+            if (id == null) {
+                throw new GroceryStoreException("Please select an order");
+            }
             String code = itemInput.getValue();
+            if (code == null) {
+                throw new GroceryStoreException("Please select an item");
+            }
             int qty = Integer.parseInt(quantityInput.getText());
+            if (qty <= 0) {
+                throw new GroceryStoreException("Quantity must be greater than 0");
+            }
             OrderController.addItemToOrder(id, code);
             GMSView.refresh();
         } catch (NumberFormatException nfe) {
@@ -130,8 +156,17 @@ public class OrderPageController {
     private void handleRemoveItem(ActionEvent e) {
         try {
             Integer id = orderInput.getValue();
+            if (id == null) {
+                throw new GroceryStoreException("Please select an order");
+            }
             String code = itemInput.getValue();
+            if (code == null) {
+                throw new GroceryStoreException("Please select an item");
+            }
             int qty = Integer.parseInt(quantityInput.getText());
+            if (qty <= 0) {
+                throw new GroceryStoreException("Quantity must be greater than 0");
+            }
             OrderController.updateQuantityInOrder(id, code, 0);
             GMSView.refresh();
         } catch (NumberFormatException nfe) {
@@ -145,7 +180,8 @@ public class OrderPageController {
     private void handleCheckout(ActionEvent e) {
         try {
             Integer id = actionOrderInput.getValue();
-            if (id == null) throw new NumberFormatException();
+            if (id == null)
+                throw new NumberFormatException();
             OrderProcessingController.checkOut(id);
             GMSView.refresh();
         } catch (NumberFormatException nfe) {
@@ -159,7 +195,8 @@ public class OrderPageController {
     private void handlePay(ActionEvent e) {
         try {
             Integer id = actionOrderInput.getValue();
-            if (id == null) throw new NumberFormatException();
+            if (id == null)
+                throw new NumberFormatException();
             OrderProcessingController.payForOrder(id, false);
             GMSView.refresh();
         } catch (NumberFormatException nfe) {
