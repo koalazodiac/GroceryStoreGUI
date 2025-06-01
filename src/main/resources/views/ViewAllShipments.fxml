@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.mcgill.ecse.grocerymanagementsystem.view.AllShipmentsController">
+   <children>
+      <TableView fx:id="ShipmentsTable" prefHeight="400.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="IDColumn" prefWidth="205.0" text="Shipment ID" />
+          <TableColumn fx:id="DateColumn" minWidth="0.0" prefWidth="394.0" text="Date Ordered" />
+
+        </columns>
+      </TableView>
+   </children>
+</VBox>

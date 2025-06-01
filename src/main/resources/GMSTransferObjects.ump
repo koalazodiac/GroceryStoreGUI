@@ -1,0 +1,48 @@
+namespace ca.mcgill.ecse.grocerymanagementsystem.controller;
+
+class TOUser{
+    immutable;
+    String username;
+    String name;
+    String phone;
+    String role;
+    String address;
+    
+}
+
+class TOItem {
+  immutable;
+  String name;
+  Boolean isPerishable;
+  Integer quantityInInventory;
+  Integer price;
+  Integer numberOfPoints;
+}
+
+class TOShipment {
+  immutable;
+  Integer shipmentNumber;
+  Date dateOrdered;
+  0..1 -> * TOShipmentItem;
+}
+class TOShipmentItem {
+  immutable;
+  Integer quantity;
+  0..1 -> 1 TOItem;
+}
+
+class TOOrder {
+  immutable;
+  Integer orderNumber;
+  Date    deadline;
+  Double  totalPrice;
+  String  status;
+  String  assignee;
+  0..*   -> * TOOrderItem;
+}
+
+class TOOrderItem {
+  immutable;
+  Integer quantity;
+  0..1 -> 1 TOItem;
+}

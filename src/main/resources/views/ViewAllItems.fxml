@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ca.mcgill.ecse.grocerymanagementsystem.view.ViewAllItemsPageController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <children>
+        <TableView fx:id="itemTable" layoutX="14.0" layoutY="14.0" prefHeight="300.0" prefWidth="570.0">
+            <columns>
+                <TableColumn fx:id="nameColumn" text="Name" />
+                <TableColumn fx:id="perishableOrNotColumn" text="Perishable" />
+                <TableColumn fx:id="priceColumn" text="Price" />
+                <TableColumn fx:id="pointsColumn" text="Points" />
+                <TableColumn fx:id="quantityColumn" text="Quantity" />
+            </columns>
+        </TableView>
+        <Button layoutX="250.0" layoutY="330.0" mnemonicParsing="false" onAction="#handleBackClicked" text="Back" />
+    </children>
+</AnchorPane>

@@ -1,0 +1,185 @@
+namespace ca.mcgill.ecse.grocerymanagementsystem.model;
+
+class Order {
+  StateOrder {
+    UnderConstruction {
+      checkout [hasAtLeastOneItem()]
+        / { displayCost(); }
+        -> Pending;
+      cancel
+        / { cancelOrder(); }
+        -> Cancelled;
+    
+     
+  
+     
+    }
+
+    Pending {
+      pay
+        [orderBeenPaid()]
+        / { updatePoints(); setDatePlaced(); takeItems(); }
+        -> Placed;
+
+     checkout [hasAtLeastOneItem()]
+        / { displayCost(); }
+        -> Pending;
+
+      cancel
+        / { cancelOrder(); }
+        -> Cancelled;
+    }
+
+    Placed {
+      assignEmployee(Employee e)
+        / { setOrderAssignee(e); updateInventory(); }
+        -> InPreparation;
+
+      cancel
+        / { returnItems(); cancelOrder(); }
+        -> Cancelled;
+    }
+
+    InPreparation {
+      finishAssembly
+        [canFinishAssembly()]
+        -> ReadyForDelivery;
+      assignEmployee(Employee e)
+        / { setOrderAssignee(e); updateInventory(); }
+        -> InPreparation;
+    }
+
+    ReadyForDelivery {
+      deliver
+        [pastDeadline()]
+        -> Delivered;
+    }
+
+    Delivered { }
+
+    Cancelled { }
+  }
+
+  // === GUARDS ===
+  public boolean hasAtLeastOneItem() {
+    return orderItems.size() > 0;
+  }
+
+  public boolean isFullCardPayment(double amount) {
+    return Math.round(amount * 100) == totalCost;
+  }
+
+  public boolean hasEnoughPoints(int pts) {
+    return orderPlacer != null && orderPlacer.getNumberOfPoints() >= pts;
+  }
+
+  public boolean pastDeadline() {
+    long daysUntilDelivery = deadline.ordinal();  // now explicit
+    long millisInADay = 24L * 60 * 60 * 1000;
+    java.sql.Date expectedDeliveryDate = new java.sql.Date(datePlaced.getTime() + daysUntilDelivery * millisInADay);
+    java.sql.Date today = java.sql.Date.valueOf(java.time.LocalDate.now());
+
+    return !expectedDeliveryDate.toLocalDate().isAfter(today.toLocalDate());
+}
+  
+
+  public boolean canFinishAssembly() {
+    return !containsPerishables() || pastDeadline();
+  }
+
+  public boolean containsPerishables() {
+    for (OrderItem oi : orderItems) {
+      if (oi.getItem().getIsPerishable()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // === ACTIONS ===
+  private void displayCost() {
+    int cost = 0;
+    for (OrderItem oi : orderItems) {
+      int qty = oi.getQuantity();
+      double discount = 1 - Math.min((qty - 1) * 0.05, 0.45);
+      double itemPrice = oi.getItem().getPrice() * discount;
+      cost += Math.round(itemPrice * qty);
+    }
+    if (deadline == DeliveryDeadline.SameDay) {
+      cost += 500;
+    }
+    setTotalCost(cost);
+  }
+
+  public void setStatusOnlyForTesting(StateOrder orderStatus){
+    this.stateOrder = orderStatus;
+  }
+
+  public void payWithPoints(Customer customer) {
+  int customerPoints = customer.getNumberOfPoints();
+  int pointsUsed = Math.min(customerPoints, totalCost);
+  customer.setNumberOfPoints(customerPoints - pointsUsed);
+  this.totalCost -= pointsUsed;
+  }
+  
+
+  public void updatePoints() {
+    int earned = 0;
+    for (OrderItem item: orderItems){
+      Item i = item.getItem();
+      earned += i.getNumberOfPoints() * item.getQuantity();
+    }
+    orderPlacer.setNumberOfPoints(orderPlacer.getNumberOfPoints() + earned);
+  }
+
+  public void cancelOrder() {
+    for (OrderItem oi : new ArrayList<>(orderItems)) {
+      oi.delete();
+    }
+  }
+
+  public void setDatePlaced() {
+    this.datePlaced = new java.sql.Date(System.currentTimeMillis());
+  }
+
+  public void assignEmployeeInternally(Employee e) {
+  setOrderAssignee(e); 
+}
+
+  public void updateInventory() {
+    for (OrderItem oi : orderItems) {
+      Item item = oi.getItem();
+      item.setQuantityInInventory(item.getQuantityInInventory() - oi.getQuantity());
+    }
+  }
+
+  public boolean orderBeenPaid() {
+  return pricePaid == totalCost;
+}
+
+  public boolean hasEmployee() {
+    return getOrderAssignee() != null;
+  }
+
+  public void returnItems(){
+    for (OrderItem orderItem : this.orderItems){
+      int quantity = orderItem.getQuantity();
+      Item item = orderItem.getItem();
+      item.setQuantityInInventory(item.getQuantityInInventory()+quantity);
+    }
+  }
+  public void takeItems(){
+    for (OrderItem orderItem : this.orderItems){
+      int quantity = orderItem.getQuantity();
+      Item item = orderItem.getItem();
+      int newQuantity = item.getQuantityInInventory()-quantity;
+      item.setQuantityInInventory(newQuantity);
+    }
+  }
+
+
+
+
+}
+
+

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<BorderPane prefHeight="360" prefWidth="600" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.mcgill.ecse.grocerymanagementsystem.view.OrderPageController">
+
+    <top>
+        <Label style="-fx-font-size:24;" text="Order Management" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets top="20" />
+            </BorderPane.margin>
+        </Label>
+    </top>
+   <center>
+        <GridPane hgap="10" vgap="10" BorderPane.alignment="CENTER">
+
+            <Label prefHeight="15.0" prefWidth="325.0" text="Customer:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <ChoiceBox fx:id="customerInput" prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <Label text="Deadline:" GridPane.columnIndex="3" />
+            <DatePicker fx:id="deadlineInput" GridPane.columnIndex="6" />
+            <Button onAction="#handleCreateOrder" prefHeight="23.0" prefWidth="353.0" text="Create Order" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Button onAction="#handleDeleteOrder" prefHeight="23.0" prefWidth="343.0" text="Delete Order" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+
+
+            <Label text="Order ID:" GridPane.rowIndex="1" />
+            <ChoiceBox fx:id="orderInput" prefWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="Item:" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+            <ChoiceBox fx:id="itemInput" prefWidth="120" GridPane.columnIndex="9" GridPane.rowIndex="1" />
+            <Label prefHeight="15.0" prefWidth="26.0" text="Qty:" GridPane.columnIndex="6" GridPane.rowIndex="2" />
+            <TextField fx:id="quantityInput" prefHeight="23.0" prefWidth="268.0" GridPane.columnIndex="9" GridPane.rowIndex="2" />
+            <Button onAction="#handleAddItem" prefHeight="23.0" prefWidth="321.0" text="Add Item" GridPane.columnIndex="14" GridPane.rowIndex="1" />
+            <Button onAction="#handleRemoveItem" prefHeight="23.0" prefWidth="331.0" text="Remove Item" GridPane.columnIndex="14" GridPane.rowIndex="2" />
+
+
+            <Label prefHeight="15.0" prefWidth="315.0" text="Order ID:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <ChoiceBox fx:id="actionOrderInput" prefWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Button onAction="#handleCheckout" prefHeight="23.0" prefWidth="297.0" text="Checkout" GridPane.columnIndex="14" />
+            <Button onAction="#handlePay" prefHeight="23.0" prefWidth="95.0" text="Pay" GridPane.columnIndex="9" />
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints maxWidth="109.33333333333331" minWidth="109.33333333333331" prefWidth="109.33333333333331" />
+            <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+            <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+            <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="36.666656494140625" minHeight="10.000020345052082" prefHeight="34.666656494140625" />
+            <RowConstraints maxHeight="36.66664632161458" minHeight="8.0" prefHeight="14.0" />
+            <RowConstraints maxHeight="29.33333333333333" minHeight="16.666676839192704" prefHeight="23.33333333333333" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+   </center>
+</BorderPane>
